@@ -1,6 +1,7 @@
 ﻿using CashFlow.Application.UseCases.Expenses.Register;
 using CashFlow.Communication.Requests;
 using CashFlow.Communication.Responses;
+using CashFlow.Exception.ExceptionsBase;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CashFlow.API.Controllers;
@@ -18,21 +19,15 @@ public class ExpensesController : ControllerBase
 
             return Created(string.Empty, response);
         }
-        catch (ArgumentException ex)
+        catch (ErrorOnValidationException ex)
         {
-            var errorResponse = new ResponseErrorJson
-            {
-                ErrorMessage = ex.Message,
-            };
+            var errorResponse = new ResponseErrorJson(ex.Errors);
 
             return BadRequest(errorResponse);
         }
         catch
         {
-            var errorMessage = new ResponseErrorJson
-            {
-                ErrorMessage = "Unknown error"
-            };
+            var errorMessage = new ResponseErrorJson("Unknown error");
 
             return StatusCode(StatusCodes.Status500InternalServerError, errorMessage);
         }

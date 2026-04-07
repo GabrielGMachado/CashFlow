@@ -17,6 +17,15 @@ public class ExceptionFilter : IExceptionFilter
 
     private void HandleProjectException(ExceptionContext context)
     {
+        if (context.Exception is ErrorOnValidationException)
+        {
+            var ex = (ErrorOnValidationException)context.Exception;
+
+            var errorMessage = new ResponseErrorJson(ex.Errors);
+
+            context.HttpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+            context.Result = new BadRequestObjectResult(errorMessage);
+        }
 
     }
 
